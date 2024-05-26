@@ -1,0 +1,271 @@
+{
+    "onboardingScreen": {
+        "screen1Title": "Welcome to our empire",
+        "screen2Title": "Select your dream car",
+        "screen3Title": "Enjoy your ride",
+        "next": "Next",
+        "skip": "Skip",
+        "getStarted": "Get started",
+        "exit": "Press back once again to exit"
+    },
+    "signinScreen": {
+        "signin": "Signin",
+        "optionsTitle": "Signin with following option",
+        "phoneNumberTitle": "Phone number",
+        "phoneNumberPlaceHolder": "Enter your phone number",
+        "btnText": "Sign In",
+        "dontAccountInfo": "Don’t have an account?",
+        "signup": "Signup",
+        "exit": "Press back once again to exit"
+    },
+    "signupScreen": {
+        "signup": "Signup",
+        "optionsTitle": "Signup with following option",
+        "nameTitle": "Name",
+        "namePlaceHolder": "Enter your name",
+        "emailIdTitle": "Email Id",
+        "emailPlaceHolder": "Enter your email Id",
+        "phoneNumberTitle": "Phone number",
+        "phoneNumberPlaceHolder": "Enter your phone number",
+        "btnText": "Sign up",
+        "alreadyAccount": "Already have an account?",
+        "signin": "Signin"
+    },
+    "verificationScreen": {
+        "header": "OTP Verification",
+        "description": "Please enter the verification code here we just sent you on",
+        "notReceive": "Haven’t received the verification code?",
+        "resend": "Resend",
+        "btnText": "Verify",
+        "wait": "Please wait"
+    },
+    "bottomTabBarScreen": {
+        "home": "Home",
+        "search": "Search",
+        "favorites": "Favorites",
+        "profile": "Profile",
+        "exit": "Press back once again to exit"
+    },
+    "homeScreen": {
+        "off": "OFF",
+        "today": "TODAY",
+        "availableTitle": "Available Near You",
+        "withDriver": "With driver",
+        "seater": "seater",
+        "day": "day",
+        "addInFav": "Added To Favorite",
+        "removeFromFav": "Removed From Favorite"
+    },
+    "carDetailScreen": {
+        "day": "day",
+        "renterTitle": "Renter",
+        "specsTitle": "Specifications",
+        "maxPower": "Max power",
+        "topSpeed": "Top speed",
+        "motor": "Motor",
+        "featuresTitle": "Features",
+        "descriptionTitle": "Description",
+        "readMore": "Read more",
+        "showLess": "Show less",
+        "mareImagesTitle": "More images",
+        "addInFav": "Added To Favorite",
+        "removeFromFav": "Removed From Favorite",
+        "btnText": "Book Now"
+    },
+    "pickupAndReturnDetailScreen": {
+        "header": "Booking information",
+        "withDriver": "With driver",
+        "pickupLocTitle": "Pick up location",
+        "returnLocTitle": "Return location",
+        "picDateTimeTitle": "Pick up date & Time",
+        "returnDateTimeTitle": "Return date & Time",
+        "noPickupLoc": "Choose pick up location",
+        "noReturnLoc": "Choose Return location",
+        "noPicDateTime": "Pick Up date & time",
+        "noReturnDateTime": "Select return date & time",
+        "btnText": "Continue"
+    },
+    "pickupAndReturnLocationScreen": {
+        "btnText": "Proceed",
+        "placeHolder": "Search location"
+    },
+    "pickupAndReturnDateAndTimeScreen": {
+        "pickupHeader": "Pick up date and time",
+        "returnHeader": "Return date and time",
+        "pickupTimeTitle": "Pick up time",
+        "pickupTimePlaceHolder": "Select pick up Time",
+        "returnTimeTitle": "Return time",
+        "returnTimePlaceHolder": "Select return time",
+        "btnText": "Continue"
+    },
+    "personalInformationScreen": {
+        "header": "Personal Information",
+        "nameTitle": "Name",
+        "namePlaceHolder": "Enter your name",
+        "emailTitle": "Email Id",
+        "emailPlaceHolder": "Enter your email id",
+        "phoneTitle": "Phone number",
+        "phonePlaceHolder": "Enter your phone number",
+        "addressTitle": "Address",
+        "addressPlaceHolder": "Enter your Address",
+        "btnText": "Continue"
+    },
+    "uploadDocumentScreen": {
+        "title": "Upload your document",
+        "idCardPlaceHolder": "Upload Identity card",
+        "licensePlaceHolder": "Upload driving license",
+        "upload": "Upload",
+        "camera": "Camera",
+        "gallery": "Gallery",
+        "sheetTitle": "Upload Options",
+        "btnText": "Continue"
+    },
+    "summaryScreen": {
+        "header": "Summary",
+        "pickupLocTitle": "Pick up location",
+        "returnLocTitle": "Return location",
+        "picDateTimeTitle": "Pick up date & Time",
+        "returnDateTimeTitle": "Return date & Time",
+        "perDayRent": "Per day car rent",
+        "today": "Total",
+        "rent": "rent",
+        "totalPayment": "Total payment",
+        "day": "day",
+        "btnText": "Continue"
+    },
+    "selectPaymentMethodScreen": {
+        "header": "Select payment method",
+        "paymentMethodTitle": "Payment Method",
+        "card": "Credit card",
+        "paypal": "PayPal",
+        "googlePay": "Google pay",
+        "cash": "Cash paid",
+        "creditCardTitle": "Credit card",
+        "cardNumberTitle": "Card number",
+        "cardNumberPlaceHolder": "Enter card number",
+        "validThruTitle": "Valid thru",
+        "validThruPlaceHolder": "Enter valid thru",
+        "cvvTitle": "CVV",
+        "cvvPlaceHolder": "Enter Cvv",
+        "carHolderNameTitle": "Card holder name",
+        "cardHolderNamePlaceHolder": "Enter card holder name",
+        "btnText": "Payment"
+    },
+    "paymentSuccessScreen": {
+        "success": "Booked successfully",
+        "description1": "Congretulation you have booked",
+        "description2": "Successfully. go to my booking for more details",
+        "backHome": "Back to home"
+    },
+    "notificationScreen": {
+        "header": "Notification",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "dismiss": "dismissed",
+        "noNotification": "No new notification"
+    },
+    "searchScreen": {
+        "header": "Search",
+        "searchPlaceHolder": "Search your favourite car",
+        "recentSearchTitle": "Recently search",
+        "clearAll": "clear all",
+        "bodyTypeTitle": "Car Body Type",
+        "filter": "Filter",
+        "priceTitle": "Price",
+        "priceCategory1": "Low to high",
+        "priceCategory2": "High to low",
+        "seatingTitle": "Seating capacity",
+        "seater": "seater",
+        "cancel": "Cancel",
+        "apply": "Apply"
+    },
+    "favoritesScreen": {
+        "header": "Favourite",
+        "seater": "seater",
+        "day": "day",
+        "snackBarMsg": "Removed from Favorite",
+        "emptyTitle": "Empty Favourite list",
+        "emptyDescription": "It feel like nothing to Collect in your  favourite list. let’s add your favourite car."
+    },
+    "profileScreen": {
+        "header": "Profile",
+        "editProfileOption": "Edit profile",
+        "bookingOption": "My booking",
+        "notificationOption": "Notification",
+        "settingOption": "Settings",
+        "termsAndConditionOption": "Terms and condition",
+        "customerSupportOption": "Customer support",
+        "rateUsOption": "Rate us",
+        "logoutOption": "Logout",
+        "rating": "Please rate your experience",
+        "submit": "Submit",
+        "skip": "Skip",
+        "logoutSure": "Are you sure you want to logout?",
+        "cancel": "Cancel",
+        "logout": "Logout"
+    },
+    "editProfileScreen": {
+        "header": "Edit profile",
+        "change": "Change",
+        "nameTitle": "Name",
+        "emailTitle": "Email Id",
+        "phoneNumberTitle": "Phone number",
+        "addressTitle": "Address",
+        "btnText": "Update",
+        "sheetTitle": "Change profile Photo",
+        "camera": "Camera",
+        "gallery": "Gallery",
+        "remove": "Remove image"
+    },
+    "bookingsScreen": {
+        "header": "My booking",
+        "bookingId": "Booking id",
+        "start": "Trip start",
+        "end": "Trip end",
+        "paid": "Paid",
+        "noBooking": "No booking yet",
+        "remove": "Remove from your bookings"
+    },
+    "settingsScreen": {
+        "header": "Settings",
+        "languages": "Languages",
+        "notification": "Notification"
+    },
+    "languagesScreen": {
+        "header": "Languages",
+        "english": "English",
+        "hindi": "Hindi",
+        "indonesian": "Indonesian",
+        "chienese": "Chienese",
+        "arabic": "Arabic"
+    },
+    "notificationSettingsScreen": {
+        "header": "Notification",
+        "pushNotificationTitle": "Push notification",
+        "applicationUpdateTitle": "Application update",
+        "darkModeTitle": "Dark mode"
+    },
+    "termsAndConditionsScreen": {
+        "header": "Terms and condition"
+    },
+    "supportScreen": {
+        "header": "Customer support",
+        "helpTitle": "How can we help you?",
+        "phoneNumberTitle": "Phone number",
+        "emailIdTitle": "Email id"
+    },
+    "calender": {
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Aug",
+        "sep": "Sep",
+        "oct": "Oct",
+        "nov": "Nov",
+        "dec": "Dec"
+    }
+}

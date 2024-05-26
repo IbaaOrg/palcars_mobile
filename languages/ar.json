@@ -1,0 +1,271 @@
+{
+    "onboardingScreen": {
+        "screen1Title": "مرحبًا بكم في بال كارز",
+        "screen2Title": "اختر سيارة أحلامك",
+        "screen3Title": "استمتع برحلتك",
+        "next": "التالي",
+        "skip": "تخطي",
+        "getStarted": "البدء",
+        "exit": "اضغط مرة أخرى للخروج"
+    },
+    "signinScreen": {
+        "signin": "تسجيل الدخول",
+        "optionsTitle": "تسجيل الدخول مع الخيار التالي",
+        "phoneNumberTitle": "رقم الهاتف",
+        "phoneNumberPlaceHolder": "أدخل رقم هاتفك",
+        "btnText": "تسجيل الدخول",
+        "dontAccountInfo": "ليس لديك حساب؟",
+        "signup": "اشتراك",
+        "exit": "اضغط مرة أخرى للخروج"
+    },
+    "signupScreen": {
+        "signup": "اشتراك",
+        "optionsTitle": "التسجيل مع الخيار التالي",
+        "nameTitle": "اسم",
+        "namePlaceHolder": "أدخل أسمك",
+        "emailIdTitle": "عنوان الايميل",
+        "emailPlaceHolder": "أدخل معرف البريد الإلكتروني الخاص بك",
+        "phoneNumberTitle": "رقم الهاتف",
+        "phoneNumberPlaceHolder": "أدخل رقم هاتفك",
+        "btnText": "اشتراك",
+        "alreadyAccount": "هل لديك حساب؟",
+        "signin": "تسجيل الدخول"
+    },
+    "verificationScreen": {
+        "header": "التحقق من OTP",
+        "description": "الرجاء إدخال رمز التحقق هنا الذي أرسلناه لك للتو",
+        "notReceive": "ألم تتلق رمز التحقق؟",
+        "resend": "إعادة إرسال",
+        "btnText": "يؤكد",
+        "wait": "أرجو الإنتظار"
+    },
+    "bottomTabBarScreen": {
+        "home": "الرئيسية",
+        "search": "بحث",
+        "favorites": "المفضلة",
+        "profile": "الملف الشخصي",
+        "exit": "اضغط مرة أخرى للخروج"
+    },
+    "homeScreen": {
+        "off": "إيقاف",
+        "today": "اليوم",
+        "availableTitle": "متاح بالقرب منك",
+        "withDriver": "مع سائق",
+        "seater": "مقاعد",
+        "day": "يوم",
+        "addInFav": "تمت الإضافة إلى المفضلة",
+        "removeFromFav": "تمت إزالته من المفضلة"
+    },
+    "carDetailScreen": {
+        "day": "يوم",
+        "renterTitle": "المستأجر",
+        "specsTitle": "تحديد",
+        "maxPower": "قوة قصوى",
+        "topSpeed": "السرعة القصوى",
+        "motor": "محرك",
+        "featuresTitle": "سمات",
+        "descriptionTitle": "وصف",
+        "readMore": "اقرأ أكثر",
+        "showLess": "عرض أقل",
+        "mareImagesTitle": "المزيد من الصور",
+        "addInFav": "تمت الإضافة إلى المفضلة",
+        "removeFromFav": "تمت إزالته من المفضلة",
+        "btnText": "احجز الآن"
+    },
+    "pickupAndReturnDetailScreen": {
+        "header": "معلومات الحجز",
+        "withDriver": "مع سائق",
+        "pickupLocTitle": "اختر موقعا",
+        "returnLocTitle": "موقع العودة",
+        "picDateTimeTitle": "التقاط التاريخ والوقت",
+        "returnDateTimeTitle": "تاريخ العودة والوقت",
+        "noPickupLoc": "اختر مكان الالتقاط",
+        "noReturnLoc": "اختر موقع العودة",
+        "noPicDateTime": "اختر التاريخ والوقت",
+        "noReturnDateTime": "حدد تاريخ ووقت العودة",
+        "btnText": "يكمل"
+    },
+    "pickupAndReturnLocationScreen": {
+        "btnText": "يتابع",
+        "placeHolder": "موقع البحث"
+    },
+    "pickupAndReturnDateAndTimeScreen": {
+        "pickupHeader": "التقط التاريخ والوقت",
+        "returnHeader": "تاريخ ووقت العودة",
+        "pickupTimeTitle": "اختار المعاد",
+        "pickupTimePlaceHolder": "حدد وقت الاستلام",
+        "returnTimeTitle": "وقت العودة",
+        "returnTimePlaceHolder": "حدد وقت العودة",
+        "btnText": "يكمل"
+    },
+    "personalInformationScreen": {
+        "header": "معلومات شخصية",
+        "nameTitle": "اسم",
+        "namePlaceHolder": "أدخل أسمك",
+        "emailTitle": "عنوان الايميل",
+        "emailPlaceHolder": "أدخل معرف البريد الإلكتروني الخاص بك",
+        "phoneTitle": "رقم الهاتف",
+        "phonePlaceHolder": "أدخل رقم هاتفك",
+        "addressTitle": "تبوك",
+        "addressPlaceHolder": "أدخل عنوانك",
+        "btnText": "يكمل"
+    },
+    "uploadDocumentScreen": {
+        "title": "قم بتحميل المستند الخاص بك",
+        "idCardPlaceHolder": "تحميل بطاقة الهوية",
+        "licensePlaceHolder": "تحميل رخصة القيادة",
+        "upload": "تحميل",
+        "camera": "آلة تصوير",
+        "gallery": "صالة عرض",
+        "sheetTitle": "خيارات التحميل",
+        "btnText": "يكمل"
+    },
+    "summaryScreen": {
+        "header": "ملخص",
+        "pickupLocTitle": "اختر موقعا",
+        "returnLocTitle": "موقع العودة",
+        "picDateTimeTitle": "التقاط التاريخ والوقت",
+        "returnDateTimeTitle": "تاريخ العودة والوقت",
+        "perDayRent": "إيجار سيارة في اليوم",
+        "today": "المجموع",
+        "rent": "تأجير",
+        "totalPayment": "المبلغ الإجمالي",
+        "day": "يوم",
+        "btnText": "يكمل"
+    },
+    "selectPaymentMethodScreen": {
+        "header": "اختار طريقة الدفع",
+        "paymentMethodTitle": "طريقة الدفع او السداد",
+        "card": "بطاقة الائتمان",
+        "paypal": "باي بال",
+        "googlePay": "دفع جوجل",
+        "cash": "النقدية المدفوعة",
+        "creditCardTitle": "بطاقة الائتمان",
+        "cardNumberTitle": "رقم البطاقة",
+        "cardNumberPlaceHolder": "أدخل رقم البطاقة",
+        "validThruTitle": "صالح حتى",
+        "validThruPlaceHolder": "أدخل من خلال صالح",
+        "cvvTitle": "CVV",
+        "cvvPlaceHolder": "أدخل Cvv",
+        "carHolderNameTitle": "إسم صاحب البطاقة",
+        "cardHolderNamePlaceHolder": "أدخل اسم حامل البطاقة",
+        "btnText": "دفع"
+    },
+    "paymentSuccessScreen": {
+        "success": "تم الحجز بنجاح",
+        "description1": "تهانينا لقد حجزت",
+        "description2": "بنجاح. انتقل إلى حجزي لمزيد من التفاصيل",
+        "backHome": "العودة إلى المنزل"
+    },
+    "notificationScreen": {
+        "header": "تنبيه",
+        "today": "اليوم",
+        "yesterday": "في الامس",
+        "dismiss": "طرد",
+        "noNotification": "لا يوجد إشعار جديد"
+    },
+    "searchScreen": {
+        "header": "يبحث",
+        "searchPlaceHolder": "ابحث في سيارتك المفضلة",
+        "recentSearchTitle": "بحث مؤخرا",
+        "clearAll": "امسح الكل",
+        "bodyTypeTitle": "نوع جسم السيارة",
+        "filter": "منقي",
+        "priceTitle": "سعر",
+        "priceCategory1": "من أسفل إلى أعلى",
+        "priceCategory2": "من الأعلى إلى الأقل",
+        "seatingTitle": "سعة الجلوس",
+        "seater": "مقاعد",
+        "cancel": "يلغي",
+        "apply": "يتقدم"
+    },
+    "favoritesScreen": {
+        "header": "المفضلة",
+        "seater": "مقاعد",
+        "day": "يوم",
+        "snackBarMsg": "تمت إزالته من المفضلة",
+        "emptyTitle": "قائمة المفضلة الفارغة",
+        "emptyDescription": "يبدو أنه لا يوجد شيء لتجمعه في قائمتك المفضلة. دعونا نضيف سيارتك المفضلة."
+    },
+    "profileScreen": {
+        "header": "الملف الشخصي",
+        "editProfileOption": "تعديل الملف الشخصي",
+        "bookingOption": "الحجز",
+        "notificationOption": "تنبيه",
+        "settingOption": "إعدادات",
+        "termsAndConditionOption": "أحكام وشروط",
+        "customerSupportOption": "دعم العملاء",
+        "rateUsOption": "قيمنا",
+        "logoutOption": "تسجيل خروج",
+        "rating": "يرجى تقييم تجربتك",
+        "submit": "يُقدِّم",
+        "skip": "يتخطى",
+        "logoutSure": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+        "cancel": "يلغي",
+        "logout": "تسجيل خروج"
+    },
+    "editProfileScreen": {
+        "header": "تعديل الملف الشخصي",
+        "change": "يتغيرون",
+        "nameTitle": "اسم",
+        "emailTitle": "عنوان الايميل",
+        "phoneNumberTitle": "رقم الهاتف",
+        "addressTitle": "تبوك",
+        "btnText": "تحديث",
+        "sheetTitle": "تغيير صورة الملف الشخصي",
+        "camera": "آلة تصوير",
+        "gallery": "صالة عرض",
+        "remove": "إزالة الصورة"
+    },
+    "bookingsScreen": {
+        "header": "الحجز",
+        "bookingId": "معرف الحجز",
+        "start": "بدء الرحلة",
+        "end": "نهاية الرحلة",
+        "paid": "مدفوع",
+        "noBooking": "لا يوجد حجز بعد",
+        "remove": "إزالة من حجوزاتك"
+    },
+    "settingsScreen": {
+        "header": "إعدادات",
+        "languages": "اللغات",
+        "notification": "تنبيه"
+    },
+    "languagesScreen": {
+        "header": "اللغات",
+        "english": "English",
+        "hindi": "हिन्दी",
+        "indonesian": "bahasa Indonesia",
+        "chienese": "中国人",
+        "arabic": "عربي"
+    },
+    "notificationSettingsScreen": {
+        "header": "تنبيه",
+        "pushNotificationTitle": "دفع الإخطار",
+        "applicationUpdateTitle": "تحديث التطبيق",
+        "darkModeTitle": "الوضع المظلم"
+    },
+    "termsAndConditionsScreen": {
+        "header": "أحكام وشروط"
+    },
+    "supportScreen": {
+        "header": "دعم العملاء",
+        "helpTitle": "كيف يمكننا مساعدتك؟",
+        "phoneNumberTitle": "رقم الهاتف",
+        "emailIdTitle": "عنوان الايميل"
+    },
+    "calender": {
+        "jan": "يناير",
+        "feb": "فبراير",
+        "mar": "مارس",
+        "apr": "أبريل",
+        "may": "مايو",
+        "jun": "يونيو",
+        "jul": "يوليو",
+        "aug": "أغسطس",
+        "sep": "سبتمبر",
+        "oct": "أكتوبر",
+        "nov": "نوفمبر",
+        "dec": "ديسمبر"
+    }
+}
