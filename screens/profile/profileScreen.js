@@ -5,6 +5,7 @@ import { FontAwesome, MaterialIcons, Ionicons, AntDesign, MaterialCommunityIcons
 import { TouchableOpacity } from 'react-native';
 import { Overlay } from '@rneui/themed';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('window');
 
@@ -16,34 +17,46 @@ const ProfileScreen = ({ navigation, isRtl, i18n }) => {
         try {
             await AsyncStorage.removeItem('token');
             console.log('Token removed');
+            navigation.replace('Signin');
         } catch (error) {
             console.error('Failed to remove token:', error);
         }
     };
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token');
-                const cleanedAuthToken = token.replace(/^"(.*)"$/, '$1');
+    const fetchData = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const cleanedAuthToken = token.replace(/^"(.*)"$/, '$1');
 
-                const response = await axios.get('https://zzz.center/public/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${cleanedAuthToken}`,
-                    },
-                });
-                setData(response.data.data);
-                console.log(response.data.data);
-
-                setLoading(false);
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-                setLoading(false);
+            if (!cleanedAuthToken) {
+                // Handle case when token is null (not found)
+                navigation.replace('Signin');
+                return; // Exit the function early
             }
-        };
-
+    
+    
+            const response = await axios.get('https://zzz.center/public/api/user', {
+                headers: {
+                    Authorization: `Bearer ${cleanedAuthToken}`,
+                },
+            });
+            setData(response.data.data);
+            console.log(response.data.data);
+    
+            setLoading(false);
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+            setLoading(false);
+        }
+    };
+    
+    useEffect(() => {
         fetchData();
-    }, []);
-
+    }, [navigation]);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchData();
+        }, [])
+    );
     function tr(key) {
         return i18n.t(`profileScreen.${key}`)
     }
@@ -252,10 +265,16 @@ const ProfileScreen = ({ navigation, isRtl, i18n }) => {
     }
 
     function logoutOption() {
+         const handleLogout = async () => {
+        // Call removeToken to remove the token from AsyncStorage
+        await removeToken();
+        navigation.replace('Signin'); // Navigate to the Signin screen after removing token
+
+    };
         return (
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => { setShowLogoutDialog(true) }}
+                onPress={handleLogout }
                 style={{ flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center', marginHorizontal: Sizes.fixPadding * 2.0, }}
             >
                 <View style={{ width: 20.0, }}>

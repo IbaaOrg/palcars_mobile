@@ -8,14 +8,16 @@ import HomeScreen from '../../screens/home/homeScreen';
 import ProfileScreen from '../../screens/profile/profileScreen';
 import SearchScreen from '../../screens/search/searchScreen';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 const BottomTabBar = ({ navigation }) => {
-
     const { i18n, language } = useContext(LanguageContext);
-
     const isRtl = (language == 'ar');
+
+    const [backClickCount, setBackClickCount] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(1);
 
     function tr(key) {
         return i18n.t(`bottomTabBarScreen.${key}`)
@@ -40,8 +42,23 @@ const BottomTabBar = ({ navigation }) => {
         }, 1000)
     }
 
-    const [backClickCount, setBackClickCount] = useState(0);
-    const [currentIndex, setCurrentIndex] = useState(1);
+    const checkTokenAndNavigate = async (index) => {
+        if (index === 3 || index === 4) {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    navigation.navigate('Signin');
+                    return;
+                }else{
+                    setCurrentIndex(index);
+                }
+            } catch (error) {
+                console.error(error);
+                return;
+            }
+        }
+        setCurrentIndex(index);
+    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -89,7 +106,7 @@ const BottomTabBar = ({ navigation }) => {
         return (
             <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={() => setCurrentIndex(index)}
+                onPress={() => checkTokenAndNavigate(index)}
                 style={{ alignItems: 'center', maxWidth: width / 4.0, }}
             >
                 <MaterialIcons name={icon} size={25} color={currentIndex == index ? Colors.primaryColor : Colors.lightGrayColor} />
@@ -153,4 +170,3 @@ const styles = StyleSheet.create({
 })
 
 export default BottomTabBar;
-

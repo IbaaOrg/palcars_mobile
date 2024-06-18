@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Animated, Image, Dimensions, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { Fonts, Sizes, Colors } from '../../constants/styles'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Animated, Image, Dimensions, TouchableOpacity, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Fonts, Sizes, Colors } from '../../constants/styles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Snackbar } from 'react-native-paper';
@@ -9,110 +9,65 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('window');
 
-const favoritesList = [
-    {
-        key: '1',
-        carImage: require('../../assets/images/cars/car2.png'),
-        carName: 'Mercedes-Benz',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-    },
-    {
-        key: '2',
-        carImage: require('../../assets/images/cars/car3.png'),
-        carName: 'Audi A8 L',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-    },
-    {
-        key: '3',
-        carImage: require('../../assets/images/cars/car4.png'),
-        carName: 'Kia Carens',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-    },
-    {
-        key: '4',
-        carImage: require('../../assets/images/cars/car5.png'),
-        carName: 'Toyota glanza',
-        rating: 5.0,
-        totalSeat: 7,
-        perDayAmount: 220,
-    },
-    {
-        key: '5',
-        carImage: require('../../assets/images/cars/car2.png'),
-        carName: 'Mercedes-Benz',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-    },
-];
-
-const rowSwipeAnimatedValues = {};
-
-Array(favoritesList.length + 1)
-    .fill('')
-    .forEach((_, i) => {
-        rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
-    });
-
-
 const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
- const [data, setData] = useState([]);
+    const [showSnackBar, setShowSnackBar] = useState(false);
+    const [listData, setListData] = useState([]);
+    const rowSwipeAnimatedValues = {};
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = await AsyncStorage.getItem('token');
-                const cleanedAuthToken = token.replace(/^"(.*)"$/, '$1');
+            const cleanedAuthToken = token.replace(/^"(.*)"$/, '$1');
+
+            if (!cleanedAuthToken) {
+                // Handle case when token is null (not found)
+                navigation.replace('Signin');
+                return; // Exit the function early
+            }
 
                 const response = await axios.get('https://zzz.center/public/api/favorites', {
                     headers: {
                         Authorization: `Bearer ${cleanedAuthToken}`,
                     },
                 });
-                setListData(response.data.data);
-                console.log(response.data.data);
+                const data = response.data.data;
+                setListData(data);
+
+                data.forEach((item, index) => {
+                    rowSwipeAnimatedValues[`${index}`] = new Animated.Value(0);
+                });
 
             } catch (error) {
                 console.error('Failed to fetch data:', error);
-                setLoading(false);
             }
         };
 
         fetchData();
     }, []);
+    const clearFavorites = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const cleanedAuthToken = token.replace(/^"(.*)"$/, '$1');
+
+            await axios.patch('https://zzz.center/public/api/favorites/clear', {}, {
+                headers: {
+                    Authorization: `Bearer ${cleanedAuthToken}`,
+                },
+            });
+
+            setListData([]);
+            setShowSnackBar(true);
+
+        } catch (error) {
+            console.error('Failed to clear favorites:', error);
+        }
+    };
     function tr(key) {
         return i18n.t(`favoritesScreen.${key}`)
     }
 
-    const [showSnackBar, setShowSnackBar] = useState(false);
-
-    const [listData, setListData] = useState([]);
-
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bodyBackColor }}>
-            <StatusBar translucent={false} backgroundColor={Colors.primaryColor} />
-            <View style={{ flex: 1, }}>
-                {listData.length == 0 ?
-                    noFavoriteItemsInfo()
-                    :
-                    <>
-                        {header()}
-                        {favoriteItems()}
-                    </>
-                }
-                {snackBar()}
-            </View>
-        </SafeAreaView>
-    )
-
     function favoriteItems() {
-
         const closeRow = (rowMap, rowKey) => {
             if (rowMap[rowKey]) {
                 rowMap[rowKey].closeRow();
@@ -124,15 +79,12 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
                 <TouchableOpacity
                     activeOpacity={0.8}
                     style={{
-                        ...styles.backDeleteContinerStyle,
+                        ...styles.backDeleteContainerStyle,
                         right: isRtl ? null : 0,
                         left: isRtl ? 0 : null,
                     }}
                     onPress={() => deleteRow(rowMap, data.item.key)}
-                >
-                   
-                      
-                </TouchableOpacity>
+                />
             </View>
         );
 
@@ -147,7 +99,9 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
 
         const onSwipeValueChange = swipeData => {
             const { key, value } = swipeData;
-            rowSwipeAnimatedValues[key].setValue(Math.abs(value));
+            if (rowSwipeAnimatedValues[key]) {
+                rowSwipeAnimatedValues[key].setValue(Math.abs(value));
+            }
         };
 
         const renderItem = data => (
@@ -155,13 +109,13 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
                 <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={() => navigation.push('CarDetail')}
-                    style={{ flexDirection: isRtl ? 'row-reverse' : 'row', ...styles.carInfoWrapStyle, }}
+                    style={{ flexDirection: isRtl ? 'row-reverse' : 'row', ...styles.carInfoWrapStyle }}
                 >
                     <Image
-                        source={data.item.carImage}
+                        source={{ uri: data.item.car.sub_images[0].photo_car_url }}
                         style={{ width: width / 3.0, height: width / 5.5, resizeMode: 'stretch' }}
                     />
-                    <View style={{ alignItems: isRtl ? 'flex-end' : 'flex-start', flex: 1, marginHorizontal: Sizes.fixPadding * 2.0, }}>
+                    <View style={{ alignItems: isRtl ? 'flex-end' : 'flex-start', flex: 1, marginHorizontal: Sizes.fixPadding * 2.0 }}>
                         <Text numberOfLines={1} style={{ paddingTop: Sizes.fixPadding - 8.0, lineHeight: 19.0, ...Fonts.blackColor16Medium }}>
                             {data.item.car.car_number}
                         </Text>
@@ -171,7 +125,7 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
                         </Text>
                         <Text>
                             <Text style={{ ...Fonts.primaryColor14SemiBold }}>
-                                {data.item.prices}
+                                {data.item.car.prices && data.item.car.prices.length > 0 && data.item.car.prices[0].price_after_discount}₪
                             </Text>
                             <Text style={{ ...Fonts.blackColor14Medium }}>
                                 /{tr('day')}
@@ -194,13 +148,13 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingTop: Sizes.fixPadding - 5.0 }}
             />
-        )
+        );
     }
 
     function snackBar() {
         return (
             <Snackbar
-                style={{ backgroundColor: Colors.lightBlackColor, elevation: 0.0, }}
+                style={{ backgroundColor: Colors.lightBlackColor, elevation: 0.0 }}
                 visible={showSnackBar}
                 onDismiss={() => setShowSnackBar(false)}
             >
@@ -208,7 +162,7 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
                     {tr('snackBarMsg')}
                 </Text>
             </Snackbar>
-        )
+        );
     }
 
     function noFavoriteItemsInfo() {
@@ -222,19 +176,40 @@ const FavoritesScreen = ({ navigation, isRtl, i18n, }) => {
                     {tr('emptyDescription')}
                 </Text>
             </View>
-        )
+        );
     }
 
     function header() {
         return (
-            <Text style={{ margin: Sizes.fixPadding * 2.0, ...Fonts.blackColor18SemiBold }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: Sizes.fixPadding * 2.0 }}>
+            <Text style={{ ...Fonts.blackColor18SemiBold }}>
                 {tr('header')}
             </Text>
-        )
+            <Button title="Clear All" onPress={clearFavorites} color={Colors.primaryColor} />
+        </View>
+        );
     }
-}
 
-export default FavoritesScreen
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bodyBackColor }}>
+            <StatusBar translucent={false} backgroundColor={Colors.primaryColor} />
+            <View style={{ flex: 1 }}>
+                {listData.length == 0 ?
+                    noFavoriteItemsInfo()
+                    :
+                    <>
+                        {header()}
+                        {favoriteItems()}
+                    </>
+                }
+                {snackBar()}
+
+            </View>
+        </SafeAreaView>
+    );
+};
+
+export default FavoritesScreen;
 
 const styles = StyleSheet.create({
     emptyPageStyle: {
@@ -243,7 +218,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: Sizes.fixPadding * 2.0,
     },
-    backDeleteContinerStyle: {
+    backDeleteContainerStyle: {
         alignItems: 'center',
         bottom: 0,
         justifyContent: 'center',
@@ -266,4 +241,4 @@ const styles = StyleSheet.create({
         borderColor: Colors.shadowColor,
         borderWidth: 1.0,
     }
-})
+});

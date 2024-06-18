@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, StatusBar, SafeAreaView, TextInput, Image, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Colors, Fonts, Sizes } from '../../constants/styles'
 import { MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { BottomSheet } from '@rneui/themed';
+import axios from 'axios';
 
 const resentSearchesList = [
     {
@@ -41,7 +42,7 @@ const bodyTypesList = [
     },
     {
         id: '3',
-        type: 'Compact SUV',
+        type: 'Convertible',
         selected: false,
     },
     {
@@ -55,15 +56,28 @@ const bodyTypesList = [
         selected: false,
     },
     {
+        id: '9',
+        type: 'Station Wagon',
+        selected: false,
+    },
+ 
+
+    {
         id: '6',
-        type: 'MPV',
+        type: 'Minivan',
         selected: false,
     },
     {
         id: '7',
-        type: 'Luxury',
+        type: 'Crossover',
         selected: false,
     },
+    {
+        id: '8',
+        type: 'Pickup trucks',
+        selected: false,
+    },
+   
 ];
 
 const seatingCapacitiesList = [
@@ -94,10 +108,21 @@ const seatingCapacitiesList = [
     },
     {
         id: '6',
-        seat: '7+',
+        seat: '8',
         selected: false,
     }];
-
+    const steeringTypesList=[
+        {
+            id : '1',
+            type: 'Manual',
+            selected: false,
+        },
+        {
+            id : '2',
+            type: 'Automatic',
+            selected: false,
+        }
+    ]
 const SearchScreen = ({ navigation, isRtl, i18n }) => {
 
     function tr(key) {
@@ -107,27 +132,103 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
     const priceFilter = [tr('priceCategory1'), tr('priceCategory2')];
 
     const [search, setSearch] = useState('');
-    const [recentSearches, setRecentSearches] = useState(resentSearchesList);
     const [bodyTypes, setBodyTypes] = useState(bodyTypesList);
     const [showFilterSheet, setShowFilterSheet] = useState(false);
     const [selectedPriceIndex, setSelectedPriceIndex] = useState(0);
     const [seatingCapacities, setSeatingCapities] = useState(seatingCapacitiesList);
+    const [steeringTypes, setSteeringTypes] = useState(steeringTypesList);
+    const [selectedSteering, setSelectedSteering] = useState(steeringTypesList[0]?.type); 
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSeats, setSelectedSeats] = useState('');
+    const [carData, setCarData] = useState([]);
+    const [priceSortOrder, setPriceSortOrder] = useState(null);
+    const [sortedCarData, setSortedCarData] = useState([]);
+    const [filteredCars, setFilteredCars] = useState(sortedCarData);
 
+    const fetchCarData = async () => {
+        try {
+            // Constructing URL based on selected filters
+            let url = 'https://zzz.center/public/api/cars';
+    
+            const params = [];
+            if (selectedCategory) params.push(`category=${selectedCategory}`);
+            if (selectedSeats === '') {
+                params.push(`seats${selectedSeats}`)
+            }
+            else {
+                params.push(`seats=${selectedSeats}`)
+
+            }
+            if (selectedSteering){
+                params.push(`steering${selectedSteering}`);
+            } else {
+                params.push(`steering=${selectedSteering}`);
+            }
+           
+    
+            if (params.length > 0) {
+                url += `?${params.join('&')}`;
+            }
+    
+            const response = await axios.get(url);
+            setCarData(response.data.data);
+            setSortedCarData(sortedCarData.length>0?sortedCarData:response.data.data);
+        } catch (error) {
+            console.error('Error fetching car data:', error);
+        }
+    };
+    
+    
+    useEffect(() => {
+            fetchCarData();  
+    }, [selectedCategory, selectedSeats,sortedCarData,search]);
+    
+    const togglePriceSortOrder = (index) => {
+        let sortedData = [...carData]; // Use carData instead of sortedCarData to reset sorting on each toggle
+    
+        if (index === 0) {
+            sortedData = sortCars('asc', sortedData); 
+        } else if (index === 1) {
+            sortedData = sortCars('desc', sortedData); 
+        }
+    
+        setPriceSortOrder(index); 
+        setSortedCarData(sortedData); 
+    };
+    
+    const sortCars = (order, data) => {
+        // Sorting function based on price
+        return data.sort((a, b) => {
+            const priceA = parseFloat(a.prices[0].price_after_discount);
+            const priceB = parseFloat(b.prices[0].price_after_discount);
+    
+            if (order === 'asc') {
+                return priceA - priceB;
+            } else {
+                return priceB - priceA;
+            }
+        });
+    };
+    useEffect(() => {
+        const filtered = carData.filter(car =>
+            car.make.toLowerCase().includes(search.toLowerCase())
+        );
+        setSortedCarData(filtered);
+    }, [search, carData]);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bodyBackColor }}>
-            <StatusBar translucent={false} backgroundColor={Colors.primaryColor} />
-            <View style={{ flex: 1, }}>
-                {header()}
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: Sizes.fixPadding - 8.0 }}>
-                    {searchFieldWithFilterIcon()}
-                    {recentSearchInfo()}
-                    {bodyTypesInfo()}
-                </ScrollView>
-            </View>
-            {filterSheet()}
-        </SafeAreaView>
+        <StatusBar translucent={false} backgroundColor={Colors.primaryColor} />
+        <View style={{ flex: 1 }}>
+            {header()}
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: Sizes.fixPadding - 8.0 }}>
+                {searchFieldWithFilterIcon()}
+                {bodyTypesInfo()}
+                {displayFetchedCars()}
+            </ScrollView>
+        </View>
+        {filterSheet()}
+    </SafeAreaView>
     )
-
     function filterSheet() {
         return (
             <BottomSheet
@@ -140,12 +241,13 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
                         {tr('filter')}
                     </Text>
                     {bodyTypesInfo()}
-                    {priceInfo()}
+                    {steeringTypesInfo()}
                     {seatingCapacityInfo()}
+                    {priceInfo()}
                     {cancelAndApplyButton()}
                 </View>
             </BottomSheet>
-        )
+        );
     }
 
     function cancelAndApplyButton() {
@@ -162,7 +264,10 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     activeOpacity={0.8}
-                    onPress={() => setShowFilterSheet(false)}
+                    onPress={() => {
+                        setShowFilterSheet(false);
+                        fetchCarData(); // Trigger the car data fetch when filters are applied
+                    }}
                     style={{ backgroundColor: Colors.primaryColor, ...styles.cancelAndApplyButtonStyle }}
                 >
                     <Text style={{ marginVertical: Sizes.fixPadding, ...Fonts.whiteColor18SemiBold }}>
@@ -170,20 +275,24 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-        )
+        );
     }
+    
 
     function changeSeatCapacities({ id }) {
-        const copyCapacity = seatingCapacities;
-        const newCapacity = copyCapacity.map((item) => {
-            if (item.id == id) {
-                return { ...item, selected: !item.selected }
+        const newCapacity = seatingCapacities.map((item) => {
+            if (item.id === id) {
+                return { ...item, selected: !item.selected };
+            } else {
+                return { ...item, selected: false }; // Deselect other seats
             }
-            return item;
-        })
+        });
+    
         setSeatingCapities(newCapacity);
+    
+        const selected = newCapacity.find((item) => item.selected)?.seat; // Get the selected seat
+        setSelectedSeats(selected || ''); // Set the selected seat or empty string if none is selected
     }
-
     function seatingCapacityInfo() {
         return (
             <View style={{ marginHorizontal: Sizes.fixPadding * 2.0, }}>
@@ -194,94 +303,113 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
                     {
                         seatingCapacities.map((item, index) => (
                             <TouchableOpacity
-                                activeOpacity={0.8}
-                                onPress={() => { changeSeatCapacities({ id: item.id }) }}
-                                key={`${index}`}
-                                style={{
-                                    borderColor: item.selected ? Colors.primaryColor : Colors.shadowColor,
-                                    borderBottomWidth: item.selected ? 1.0 : 0.0,
-                                    ...styles.infoWrapStyle,
-                                }}
-                            >
-                                <Text style={{ ...item.selected ? { ...Fonts.primaryColor14Medium } : { ...Fonts.grayColor14Medium } }}>
-                                    {item.seat} {tr('seater')}
-                                </Text>
-                            </TouchableOpacity>
+                            activeOpacity={0.8}
+                            onPress={() => { changeSeatCapacities({ id: item.id }) }}
+                            key={`${index}`}
+                            style={{
+                                borderColor: item.selected ? Colors.primaryColor : Colors.shadowColor,
+                                borderBottomWidth: item.selected ? 1.0 : 0.0,
+                                ...styles.infoWrapStyle,
+                            }}
+                        >
+                            <Text style={{ ...item.selected ? { ...Fonts.primaryColor14Medium } : { ...Fonts.grayColor14Medium } }}>
+                                {item.seat} {tr('seater')}
+                            </Text>
+                        </TouchableOpacity>
+                        
                         ))
                     }
                 </View>
             </View>
         )
     }
+    function changeSteeringTypes({ id }) {
+        const newSteeringTypes = steeringTypes.map((item) => {
+            if (item.id === id) {
+                return { ...item, selected: true };
+            } else {
+                return { ...item, selected: false };
+            }
+        });
 
-    function priceInfo() {
+        setSteeringTypes(newSteeringTypes);
+
+        const selected = newSteeringTypes.find((item) => item.selected)?.type;
+        setSelectedSteering(selected || '');
+    }
+   
+    function priceInfo (){
         return (
-            <View style={{ marginVertical: Sizes.fixPadding * 3.5, marginHorizontal: Sizes.fixPadding * 2.0, }}>
-                <Text style={{ ...Fonts.blackColor16Medium }}>
-                    {tr('priceTitle')}
-                </Text>
-                <View style={{ flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-                    {
-                        priceFilter.map((item, index) => (
-                            <TouchableOpacity
-                                activeOpacity={0.8}
-                                onPress={() => { setSelectedPriceIndex(index) }}
-                                key={`${index}`}
-                                style={{
-                                    borderColor: selectedPriceIndex == index ? Colors.primaryColor : Colors.shadowColor,
-                                    borderBottomWidth: selectedPriceIndex == index ? 1.0 : 0.0,
-                                    ...styles.infoWrapStyle,
-                                }}
-                            >
-                                <Text style={{ ...selectedPriceIndex == index ? { ...Fonts.primaryColor14Medium } : { ...Fonts.grayColor14Medium } }}>
-                                    {item}
-                                </Text>
-                            </TouchableOpacity>
-                        ))
-                    }
+            <View style={{ marginVertical: Sizes.fixPadding * 3.5, marginHorizontal: Sizes.fixPadding * 2.0 }}>
+                <Text style={{ ...Fonts.blackColor16Medium }}>Price</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+                    {priceFilter.map((item, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => togglePriceSortOrder(index)}
+                            style={{
+                                borderColor: priceSortOrder === index ? Colors.primaryColor : Colors.shadowColor,
+                                borderBottomWidth: priceSortOrder === index ? 1.0 : 0.0,
+                                ...styles.infoWrapStyle,
+                            }}>
+                            <Text style={{ ...priceSortOrder === index ? Fonts.primaryColor14Medium : Fonts.grayColor14Medium }}>
+                                {item}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
+            </View>
+        );
+    };
+
+
+    function changeBodyTypes({ id }) {
+        const newBodyTypes = bodyTypes.map((item) => {
+            if (item.id === id) {
+                return { ...item, selected: true };
+            } else {
+                return { ...item, selected: false };
+            }
+        });
+    
+        setBodyTypes(newBodyTypes);
+    
+        const selectedBodyType = newBodyTypes.find(item => item.selected);
+        setSelectedCategory(selectedBodyType && selectedBodyType.type !== 'All' ? selectedBodyType.type : '');
+    }
+    
+    
+    function changeSeatCapacities({ id }) {
+        const copyCapacity = seatingCapacities;
+        const newCapacity = copyCapacity.map((item) => {
+            if (item.id == id) {
+                return { ...item, selected: true }
+            }else {
+                return { ...item, selected: false };
+           
+            }
+        })
+        setSeatingCapities(newCapacity);
+        const selected = newCapacity.filter(item => item.selected).map(item => item.seat).join(',');
+        setSelectedSeats(selected);
+    }
+    
+    function displayFetchedCars() {
+        return (
+            <View style={{ marginTop: Sizes.fixPadding * 2.0, marginHorizontal: Sizes.fixPadding * 2.0 ,}}>
+                {sortedCarData.map((car, index) => (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',backgroundColor: Colors.whiteColor,borderCurve:2, marginBottom: Sizes.fixPadding + 5.0 }}>
+                        <Image source={{ uri: car.sub_images[0].photo_car_url }} style={{ width: 100.0, height: 50.0, resizeMode: 'stretch' }} />
+                        <Text style={{ marginHorizontal: Sizes.fixPadding, ...Fonts.grayColor14Medium }}>{car.make} - {car.model}</Text>
+                        <Text style={{ marginHorizontal: Sizes.fixPadding, ...Fonts.primaryColor14Medium }}>{car.prices[0].price_after_discount}₪/day</Text>
+                    </View>
+                ))}
             </View>
         )
     }
-
-    function changeBodyTypes({ id, type, selected }) {
-        var newTypes;
-        const copyBodyTypes = bodyTypes;
-        if (((copyBodyTypes.filter((item) => item.selected == false).length) - 1) == 1 && selected == false) {
-            newTypes = copyBodyTypes.map((item) => {
-                return { ...item, selected: true }
-            })
-        }
-        else {
-            if (type == 'All') {
-                newTypes = copyBodyTypes.map((item) => {
-                    return { ...item, selected: copyBodyTypes[0].selected ? false : true }
-                })
-            }
-            else {
-                copyBodyTypes[0].selected
-                    ?
-                    newTypes = copyBodyTypes.map((item) => {
-                        if (item.id == id) {
-                            return { ...item, selected: !item.selected }
-                        }
-                        if (item.type == 'All') {
-                            return { ...item, selected: false }
-                        }
-                        return item;
-                    })
-                    :
-                    newTypes = copyBodyTypes.map((item) => {
-                        if (item.id == id) {
-                            return { ...item, selected: !item.selected }
-                        }
-                        return item;
-                    })
-            }
-        }
-        setBodyTypes(newTypes);
-    }
-
+    
+    
+    
     function bodyTypesInfo() {
         return (
             <View style={{ marginHorizontal: Sizes.fixPadding * 2.0 }}>
@@ -312,52 +440,35 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
         )
     }
 
-    function recentSearchInfo() {
+   
+    function steeringTypesInfo() {
         return (
-            recentSearches.length == 0
-                ?
-                null
-                :
-                <View style={{ marginBottom: Sizes.fixPadding - 5.0, }}>
-                    {recentSearchTitle()}
-                    {recentSearchesData()}
+            <View style={{ marginHorizontal: Sizes.fixPadding * 2.0 }}>
+                <Text style={{ marginBottom: Sizes.fixPadding - 5.0, ...Fonts.blackColor16Medium }}>
+                     Steering
+                </Text>
+                <View style={{ flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+                    {steeringTypes.map((item, index) => (
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            onPress={() => { changeSteeringTypes({ id: item.id }) }}
+                            key={`${index}`}
+                            style={{
+                                borderColor: item.selected ? Colors.primaryColor : Colors.shadowColor,
+                                borderBottomWidth: item.selected ? 1.0 : 0.0,
+                                ...styles.infoWrapStyle,
+                            }}
+                        >
+                            <Text style={{ ...item.selected ? { ...Fonts.primaryColor14Medium } : { ...Fonts.grayColor14Medium } }}>
+                                {item.type}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
-        )
-    }
-
-    function recentSearchesData() {
-        return (
-            <View style={{ marginTop: Sizes.fixPadding + 5.0, marginHorizontal: Sizes.fixPadding * 2.0, }}>
-                {recentSearches.map((item) => (
-                    <View
-                        key={`${item.id}`}
-                        style={{ flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center', marginBottom: Sizes.fixPadding + 5.0, }}
-                    >
-                        <Image
-                            source={item.carImage}
-                            style={{ width: 50.0, height: 20.0, resizeMode: 'stretch', }}
-                        />
-                        <Text style={{ marginHorizontal: Sizes.fixPadding, ...Fonts.grayColor14Medium }}>
-                            {item.car}
-                        </Text>
-                    </View>
-                ))}
             </View>
         )
     }
 
-    function recentSearchTitle() {
-        return (
-            <View style={{ flexDirection: isRtl ? 'row-reverse' : 'row', ...styles.recentSearchTitleWrapStyle, }}>
-                <Text style={{ flex: 0.9, ...Fonts.blackColor16Medium }}>
-                    {tr('recentSearchTitle')}
-                </Text>
-                <Text onPress={() => setRecentSearches([])} style={{ ...Fonts.grayColor14Medium }}>
-                    {tr('clearAll')}
-                </Text>
-            </View>
-        )
-    }
 
     function searchFieldWithFilterIcon() {
         return (
@@ -440,6 +551,7 @@ const styles = StyleSheet.create({
         marginBottom: Sizes.fixPadding,
         marginRight: Sizes.fixPadding,
         paddingBottom: Sizes.fixPadding - 2.0,
+        marginHorizontal: Sizes.fixPadding * 2.0,
     },
     sheetWrapStyle: {
         backgroundColor: Colors.whiteColor,

@@ -1,177 +1,132 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Dimensions, ImageBackground, } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
 import { Colors, Fonts, Sizes } from '../../constants/styles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { showRating } from '../../components/usableComponent/usableComponent';
 import { Snackbar } from 'react-native-paper';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 
 const categoriesList = [
-    {
-        id: '1',
-        category: 'All',
-    },
-    {
-        id: '2',
-        category: 'Hatchback',
-    },
-    {
-        id: '3',
-        category: 'Compact SUV',
-    },
-    {
-        id: '4',
-        category: 'SUV',
-    },
-    {
-        id: '5',
-        category: 'Sedan',
-    },
-    {
-        id: '6',
-        category: 'MPV',
-    },
-    {
-        id: '7',
-        category: 'Luxury',
-    },
-];
-
-const availableCarsList = [
-   /*  {
-        id: '1',
-        carImage: require('../../assets/images/cars/car2.png'),
-        carName: 'Mercedes-Benz',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '2',
-        carImage: require('../../assets/images/cars/car3.png'),
-        carName: 'Audi A8 L',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '3',
-        carImage: require('../../assets/images/cars/car4.png'),
-        carName: 'Kia Carens',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '4',
-        carImage: require('../../assets/images/cars/car5.png'),
-        carName: 'Toyota glanza',
-        rating: 5.0,
-        totalSeat: 7,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '5',
-        carImage: require('../../assets/images/cars/car2.png'),
-        carName: 'Mercedes-Benz',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '6',
-        carImage: require('../../assets/images/cars/car3.png'),
-        carName: 'Audi A8 L',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '7',
-        carImage: require('../../assets/images/cars/car4.png'),
-        carName: 'Kia Carens',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '8',
-        carImage: require('../../assets/images/cars/car5.png'),
-        carName: 'Toyota glanza',
-        rating: 5.0,
-        totalSeat: 7,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '9',
-        carImage: require('../../assets/images/cars/car2.png'),
-        carName: 'Mercedes-Benz',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    },
-    {
-        id: '10',
-        carImage: require('../../assets/images/cars/car3.png'),
-        carName: 'Audi A8 L',
-        rating: 5.0,
-        totalSeat: 5,
-        perDayAmount: 220,
-        inFavorite: false,
-    }, */
+    { id: '1', category: 'All' },
+    { id: '2', category: 'Hatchback' },
+    { id: '3', category: 'Compact SUV' },
+    { id: '4', category: 'SUV' },
+    { id: '5', category: 'Sedan' },
+    { id: '6', category: 'MPV' },
+    { id: '7', category: 'Luxury' },
 ];
 
 const HomeScreen = ({ navigation, isRtl, i18n }) => {
-    const [palcarscars, setPalcarsCars] = useState([]);
-
-
-  const [selectedImage, setSelectedImage] = useState(null);
- 
-  const fetchData = async () => {
-
-    try { 
-      const response = await axios.get('https://zzz.center/public/api/cars');
-    const data = response.data.data;
-        console.log(data);
-
-        const formattedData = data.map(car => ({
-            ...car,
-            imageUrl: car.sub_images.length > 0 ? car.sub_images[0].photo_car_url : 'default_image_url'
-        }));
-
-        setCars(formattedData);
-
-        console.log(formattedData);
-    } catch (error) {
-      console.error(error);
-    } 
-   
-  };
-    useEffect(() => {
-        fetchData();
-
-    }, []); 
-    function tr(key) {
-        return i18n.t(`homeScreen.${key}`)
-    }
-
-    const [selectedCategory, setSelectedCategory] = useState(categoriesList[0].category);
-    const [withDriverSwitch, setWithDriverSwitch] = useState(true);
+    const [category, setCategory] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
     const [cars, setCars] = useState([]);
     const [showSnackBar, setShowSnackBar] = useState(false);
+    const [token, setToken] = useState(null);
     const [snackBarMsg, setSnackBarMsg] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState(categoriesList[0].category);
+    const [withDriverSwitch, setWithDriverSwitch] = useState(true);
+
+    useEffect(() => {
+        const getToken = async () => {
+            try {
+                const storedToken = await AsyncStorage.getItem('token');
+                if (storedToken) {
+                    setToken(storedToken);
+                }
+                fetchData(storedToken);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        getToken();
+    }, [category]);
+
+    const fetchData = async (authToken) => {
+        try {
+            const response = await axios.get(`https://zzz.center/public/api/cars?category=${category ? category : ""}`);
+            const data = response.data.data;
+
+            const formattedData = data.map(car => ({
+                ...car,
+                imageUrl: car.sub_images.length > 0 ? car.sub_images[0].photo_car_url : 'default_image_url',
+            }));
+
+            if (authToken) {
+                const cleanedAuthToken = authToken.replace(/^"(.*)"$/, '$1');
+                const favoritesResponse = await axios.get('https://zzz.center/public/api/favorites', {
+                    headers: { Authorization: `Bearer ${cleanedAuthToken}` },
+                });
+                const favorites = favoritesResponse.data.data;
+
+                const formattedWithFavorites = formattedData.map(car => ({
+                    ...car,
+                    inFavorite: favorites.some(fav => fav.car.id === car.id),
+                    favoriteId: favorites.find(fav => fav.car.id === car.id)?.id || null,
+                }));
+
+                setCars(formattedWithFavorites);
+            } else {
+                setCars(formattedData);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const updateCars = async ({ id }) => {
+        const updatedCars = cars.map((item) => {
+            if (item.id === id) {
+                const updatedCar = { ...item, inFavorite: !item.inFavorite };
+                setSnackBarMsg(item.inFavorite ? tr('removeFromFav') : tr('addInFav'));
+                return updatedCar;
+            }
+            return item;
+        });
+
+        const updatedCar = updatedCars.find(car => car.id === id);
+        try {
+            const storedToken = await AsyncStorage.getItem('token');
+            const cleanedAuthToken = storedToken.replace(/^"(.*)"$/, '$1');
+            let response;
+
+            if (updatedCar.inFavorite) {
+                response = await axios.post('https://zzz.center/public/api/favorites', {
+                    car_id: updatedCar.id,
+                }, {
+                    headers: { Authorization: `Bearer ${cleanedAuthToken}` },
+                });
+            } else {
+                response = await axios.delete(`https://zzz.center/public/api/favorites/${updatedCar.favoriteId}`, {
+                    headers: { Authorization: `Bearer ${cleanedAuthToken}` },
+                });
+            }
+
+            if (response.status === 200 || response.status === 204) {
+                setCars(updatedCars);
+                setShowSnackBar(true);
+            } else {
+                throw new Error('Failed to update favorite status');
+            }
+        } catch (error) {
+            console.error(error);
+            const revertedCars = cars.map((item) => {
+                if (item.id === id) {
+                    return { ...item, inFavorite: !item.inFavorite };
+                }
+                return item;
+            });
+            setCars(revertedCars);
+            setSnackBarMsg(tr('updateFavFailed'));
+            setShowSnackBar(true);
+        }
+    };
+
+    function tr(key) {
+        return i18n.t(`homeScreen.${key}`);
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bodyBackColor }}>
@@ -190,7 +145,7 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
             </View>
             {snackBar()}
         </SafeAreaView>
-    )
+    );
 
     function snackBar() {
         return (
@@ -199,69 +154,63 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
                 onDismiss={() => setShowSnackBar(false)}
                 style={{ elevation: 0.0, backgroundColor: Colors.lightBlackColor }}
             >
-                <Text style={{ ...Fonts.whiteColor12Regular, }}>
+                <Text style={{ ...Fonts.whiteColor12Regular }}>
                     {snackBarMsg}
                 </Text>
             </Snackbar>
-        )
+        );
     }
 
     function availableCarInfo() {
         return (
             <>
-                <View style={{ marginHorizontal: Sizes.fixPadding * 2.0, }}>
-                   
-                    
-                </View>
+                <View style={{ marginHorizontal: Sizes.fixPadding * 2.0 }} />
                 {availableCars()}
             </>
-        )
-    }
-
-    function updateCars({ id }) {
-        const copyCars = cars;
-        const newCar = copyCars.map((item) => {
-            if (item.id == id) {
-                setSnackBarMsg(item.inFavorite ? tr('removeFromFav') : tr('addInFav'))
-                return { ...item, inFavorite: !item.inFavorite };
-            }
-            else {
-                return item;
-            }
-        })
-        setCars(newCar);
-        setShowSnackBar(true);
+        );
     }
 
     function availableCars() {
         const renderItem = ({ item }) => (
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => navigation.push('CarDetail')}
+                onPress={() => navigation.push('CarDetail', { itemId: item.id })}
                 style={styles.availableCarsWrapStyle}
             >
-                <MaterialIcons
-                    name={item.inFavorite ? "favorite" : "favorite-outline"}
-                    size={18}
-                    color={item.inFavorite ? Colors.primaryColor : Colors.grayColor}
-                    style={{ alignSelf: 'flex-end', margin: Sizes.fixPadding }}
-                    onPress={() => updateCars({ id: item.id })}
-                />
+                {token ? (
+                    item.inFavorite ? (
+                        <MaterialIcons
+                            name="favorite"
+                            size={18}
+                            color={Colors.primaryColor}
+                            style={{ alignSelf: 'flex-end', margin: Sizes.fixPadding }}
+                            onPress={() => updateCars({ id: item.id })}
+                        />
+                    ) : (
+                        <MaterialIcons
+                            name="favorite-outline"
+                            size={18}
+                            color={Colors.grayColor}
+                            style={{ alignSelf: 'flex-end', margin: Sizes.fixPadding }}
+                            onPress={() => updateCars({ id: item.id })}
+                        />
+                    )
+                ) : null}
                 <Image
                     source={{ uri: item.imageUrl }}
-                    style={{ height: height / 9.0, width: '100%', resizeMode: 'stretch', }}
+                    style={{ height: height / 9.0, width: '100%', resizeMode: 'stretch' }}
                 />
                 <View style={{ marginVertical: Sizes.fixPadding - 5.0, marginHorizontal: Sizes.fixPadding }}>
                     <Text style={{ paddingTop: Sizes.fixPadding - 5.0, lineHeight: 17.0, ...Fonts.blackColor14Medium }}>
                         {item.car_number}
                     </Text>
-                    {showRating({ number: 5.0, starSize: 12.0, })}
+                    {showRating({ number: 5.0, starSize: 12.0 })}
                     <Text style={{ marginTop: Sizes.fixPadding - 7.0, ...Fonts.grayColor12Medium }}>
                         {item.seats} {tr('seater')}
                     </Text>
                     <Text>
                         <Text style={{ ...Fonts.primaryColor14SemiBold }}>
-                            ${item.prices.price}
+                            {item.prices.length > 0 ? item.prices[0].price : 'N/A'}₪
                         </Text>
                         <Text style={{ ...Fonts.blackColor14Medium }}>
                             /{tr('day')}
@@ -269,7 +218,8 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
                     </Text>
                 </View>
             </TouchableOpacity>
-        )
+        );
+
         return (
             <View style={{ marginTop: Sizes.fixPadding + 5.0, marginHorizontal: Sizes.fixPadding }}>
                 <FlatList
@@ -281,50 +231,28 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
                     showsVerticalScrollIndicator={false}
                 />
             </View>
-        )
-    }
-
-    function availableTitle() {
-        return (
-            <Text style={{ ...Fonts.blackColor16SemiBold, marginBottom: Sizes.fixPadding - 5.0, }}>
-                {tr('availableTitle')}
-            </Text>
-        )
-    }
-
-    function withDriverOrNotInfo() {
-        return (
-            <View style={{ flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center', justifyContent: 'space-between', }}>
-                <Text style={{ ...Fonts.blackColor14Medium }}>
-                    {tr('withDriver')}
-                </Text>
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => setWithDriverSwitch(!withDriverSwitch)}
-                    style={{ ...styles.switchStyle, backgroundColor: withDriverSwitch ? Colors.primaryColor : Colors.lightGrayColor, }}
-                >
-                    <View style={{ alignSelf: withDriverSwitch ? 'flex-end' : 'flex-start', ...styles.switchInnerCircleStyle }} />
-                </TouchableOpacity>
-            </View>
-        )
+        );
     }
 
     function categoriesInfo() {
         const renderItem = ({ item }) => (
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => setSelectedCategory(item.category)}
+                onPress={() => {
+                    setSelectedCategory(item.category);
+                    setCategory(item.category === 'All' ? '' : item.category);
+                }}
                 style={{
-                    backgroundColor: selectedCategory == item.category ? Colors.primaryColor : Colors.whiteColor,
-                    borderColor: selectedCategory == item.category ? Colors.primaryColor : Colors.bodyBackColor,
+                    backgroundColor: selectedCategory === item.category ? Colors.primaryColor : Colors.whiteColor,
+                    borderColor: selectedCategory === item.category ? Colors.primaryColor : Colors.bodyBackColor,
                     ...styles.categoryWrapStyle,
                 }}
             >
-                <Text style={selectedCategory == item.category ? { ...Fonts.whiteColor16Medium } : { ...Fonts.grayColor16Medium }}>
+                <Text style={selectedCategory === item.category ? { ...Fonts.whiteColor16Medium } : { ...Fonts.grayColor16Medium }}>
                     {item.category}
                 </Text>
             </TouchableOpacity>
-        )
+        );
         return (
             <View>
                 <FlatList
@@ -337,7 +265,7 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
                     inverted={isRtl}
                 />
             </View>
-        )
+        );
     }
 
     function banner() {
@@ -348,34 +276,29 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
                 resizeMode="stretch"
                 borderRadius={Sizes.fixPadding}
             >
-                <View style={{ zIndex: 1, marginHorizontal: Sizes.fixPadding * 2.0, marginVertical: Sizes.fixPadding + 5.0, }}>
+                <View style={{ zIndex: 1, marginHorizontal: Sizes.fixPadding * 2.0, marginVertical: Sizes.fixPadding + 5.0 }}>
                     <Text numberOfLines={3} style={{ maxWidth: width / 2.0, marginBottom: Sizes.fixPadding + 5.0, ...Fonts.whiteColor18BoldItalic }}>
                         {`BEST CAR\nRENTAL DEAL\nTODAY`}
                     </Text>
-                  
                 </View>
-              
             </ImageBackground>
-        )
+        );
     }
 
     function addressInfoWithNotificationIcon() {
         return (
-            <View style={{ flexDirection: isRtl ? 'row-reverse' : 'row', ...styles.addressInfoWithNotificationIconWrapStyle, }}>
-                <View style={{ flex: 1, flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center' }}>
-                    
-                </View>
+            <View style={{ flexDirection: isRtl ? 'row-reverse' : 'row', ...styles.addressInfoWithNotificationIconWrapStyle }}>
+                <View style={{ flex: 1, flexDirection: isRtl ? 'row-reverse' : 'row', alignItems: 'center' }} />
                 <TouchableOpacity
                     activeOpacity={0.8}
-                    onPress={() => { navigation.push('Notification') }}
+                    onPress={() => navigation.push('Notification')}
                 >
                     <MaterialIcons name="notifications" size={30} color={Colors.primaryColor} />
-
                 </TouchableOpacity>
             </View>
-        )
+        );
     }
-}
+};
 
 export default HomeScreen;
 
@@ -440,4 +363,4 @@ const styles = StyleSheet.create({
         elevation: 3.0,
         borderRadius: Sizes.fixPadding,
     }
-})
+});

@@ -6,85 +6,117 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useContext, useState, useEffect } from 'react';
 import CollapsibleToolbar from "react-native-collapsible-toolbar";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { Colors, Sizes, Fonts } from "../../constants/styles";
 import { LanguageContext } from "../../languages";
 import { Snackbar } from "react-native-paper";
+
 import {
   Button,
   showRating,
 } from "../../components/usableComponent/usableComponent";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRoute } from '@react-navigation/native';
+import axios from 'axios';
 
 const { height, width } = Dimensions.get("window");
 
-const featuresList = [
-  {
-    id: "1",
-    featureIcon: require("../../assets/images/icons/ac.png"),
-    feature: "Air conditioning",
-  },
-  {
-    id: "2",
-    featureIcon: require("../../assets/images/icons/music.png"),
-    feature: "Music",
-  },
-  {
-    id: "3",
-    featureIcon: require("../../assets/images/icons/person.png"),
-    feature: "5 seater",
-  },
-  {
-    id: "4",
-    featureIcon: require("../../assets/images/icons/color.png"),
-    feature: "Color",
-  },
-  {
-    id: "5",
-    featureIcon: require("../../assets/images/icons/tank.png"),
-    feature: "Full tank",
-  },
-  {
-    id: "6",
-    featureIcon: require("../../assets/images/icons/manual.png"),
-    feature: "Manual",
-  },
-];
 
-const carMoreImages = [
-  {
-    id: "1",
-    image: require("../../assets/images/carParts/carPart1.png"),
-  },
-  {
-    id: "2",
-    image: require("../../assets/images/carParts/carPart2.png"),
-  },
-  {
-    id: "3",
-    image: require("../../assets/images/carParts/carPart3.png"),
-  },
-  {
-    id: "4",
-    image: require("../../assets/images/carParts/carPart4.png"),
-  },
-];
+
 
 const CarDetailScreen = ({ navigation }) => {
   const { i18n, language } = useContext(LanguageContext);
   const insets = useSafeAreaInsets();
-
   const isRtl = language == "ar";
-
+  
   function tr(key) {
     return i18n.t(`carDetailScreen.${key}`);
   }
-
+  
+  const route = useRoute();
+  const { itemId } = route.params;
+  
   const [inFavorite, setInFavorite] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [readMore, setReadMore] = useState(false);
+  const [car, setCar] = useState(null); // State for storing car data
+  const [carMoreImages, setCarMoreImages] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`https://zzz.center/public/api/cars/${itemId}`);
+       setCar(response.data.data)
+       const images = response.data.data.sub_images.map((image, index) => ({
+        id: index.toString(),
+        image: { uri: image.photo_car_url },
+      }));
+      setCarMoreImages(images);
+       console.log(response.data.data)
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    };
+    fetchData();
+  }, [itemId]); 
+  
+  const featuresList = [
+    {
+      id: "1",
+      featureIcon: require("../../assets/images/icons/ac.png"),
+      feature: "Air conditioning",
+    },
+    {
+      id: "2",
+      featureIcon: require("../../assets/images/icons/music.png"),
+      feature: "Music",
+    },
+    {
+      id: "3",
+      featureIcon: require("../../assets/images/icons/person.png"),
+      feature: `${car && car.seats ? car.seats : 'N/A'} Seater`,
+    },
+    {
+      id: "4",
+      featureIcon: require("../../assets/images/icons/color.png"),
+      feature: `${car && car.year ? car.year : 'N/A'} Year`,
+
+    },
+    {
+      id: "5",
+      featureIcon: require("../../assets/images/icons/doors.png"),
+      feature: `${car && car.doors ? car.doors : 'N/A'} doors`,
+
+    },
+    {
+      id: "6",
+      featureIcon: require("../../assets/images/icons/bags.png"),
+      feature: `${car && car.bags ? car.bags : 'N/A'} bags`,
+
+    },
+   
+  ];
+  
+  // const carMoreImages = [
+  //   {
+  //     id: "1",
+  //     image: require("../../assets/images/carParts/carPart1.png"),
+  //   },
+  //   {
+  //     id: "2",
+  //     image: require("../../assets/images/carParts/carPart2.png"),
+  //   },
+  //   {
+  //     id: "3",
+  //     image: require("../../assets/images/carParts/carPart3.png"),
+  //   },
+  //   {
+  //     id: "4",
+  //     image: require("../../assets/images/carParts/carPart4.png"),
+  //   },
+    
+  // ];
 
   return (
     <>
@@ -97,6 +129,7 @@ const CarDetailScreen = ({ navigation }) => {
         toolBarHeight={height / 3.0}
         showsVerticalScrollIndicator={false}
       />
+
       {bookNowButton()}
       {snackBar()}
     </>
@@ -135,7 +168,6 @@ const CarDetailScreen = ({ navigation }) => {
         {renterInfo()}
         {specialityInfo()}
         {featuresInfo()}
-        {descriptionInfo()}
         {moreImages()}
       </View>
     );
@@ -143,9 +175,10 @@ const CarDetailScreen = ({ navigation }) => {
 
   function moreImages() {
     return (
-      <View>
+      <View >
         <Text
           style={{
+            paddingTop: Sizes.fixPadding * 3.0,
             marginHorizontal: Sizes.fixPadding * 2.0,
             marginBottom: Sizes.fixPadding,
             ...Fonts.blackColor16SemiBold,
@@ -277,9 +310,10 @@ const CarDetailScreen = ({ navigation }) => {
             justifyContent: "space-between",
           }}
         >
-          {specialitySort({ title: tr("maxPower"), value: "320 HP" })}
-          {specialitySort({ title: tr("topSpeed"), value: "220 km/ h" })}
-          {specialitySort({ title: tr("motor"), value: "2500cc" })}
+       {specialitySort({ title: tr("steering"), value: car && car.steering ? car.steering : 'N/A' })}
+{specialitySort({ title: tr("fueltype"), value: car && car.fuel_type ? car.fuel_type : 'N/A' })}
+{specialitySort({ title: tr("fuelfull"), value: car && car.fuel_full ? car.fuel_full : 'N/A' })}
+
         </View>
       </View>
     );
@@ -303,7 +337,6 @@ const CarDetailScreen = ({ navigation }) => {
       </View>
     );
   }
-
   function renterInfo() {
     return (
       <View style={{ marginHorizontal: Sizes.fixPadding * 2.0 }}>
@@ -313,7 +346,7 @@ const CarDetailScreen = ({ navigation }) => {
             ...Fonts.blackColor16SemiBold,
           }}
         >
-          {tr("renterTitle")}
+          {tr("companyTitle")}
         </Text>
         <View
           style={{
@@ -322,28 +355,34 @@ const CarDetailScreen = ({ navigation }) => {
             justifyContent: "space-between",
           }}
         >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: isRtl ? "row-reverse" : "row",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              source={require("../../assets/images/users/user1.png")}
-              style={{ width: 40.0, height: 40.0, borderRadius: 20.0 }}
-            />
-            <Text
+          {car && car.owneruser ? (
+            <View
               style={{
-                textAlign: isRtl ? "right" : "left",
                 flex: 1,
-                marginHorizontal: Sizes.fixPadding,
-                ...Fonts.blackColor14Medium,
+                flexDirection: isRtl ? "row-reverse" : "row",
+                alignItems: "center",
               }}
             >
-              Cameron Williamson
-            </Text>
-          </View>
+              <Image
+                source={{
+                  uri: car.owneruser.photo_user || 'default_photo_uri', // Provide a default photo uri
+                }}
+                style={{ width: 40.0, height: 40.0, borderRadius: 20.0 }}
+              />
+              <Text
+                style={{
+                  textAlign: isRtl ? "right" : "left",
+                  flex: 1,
+                  marginHorizontal: Sizes.fixPadding,
+                  ...Fonts.blackColor14Medium,
+                }}
+              >
+                {car.owneruser.name } Comapny
+              </Text>
+            </View>
+          ) : (
+            <Text>Loading...</Text> // Show loading indicator or provide fallback
+          )}
           <View
             style={{
               flexDirection: isRtl ? "row-reverse" : "row",
@@ -373,7 +412,7 @@ const CarDetailScreen = ({ navigation }) => {
       </View>
     );
   }
-
+  
   function carInfo() {
     return (
       <View
@@ -382,40 +421,52 @@ const CarDetailScreen = ({ navigation }) => {
           ...styles.carInfoWrapStyle,
         }}
       >
-        <View style={{ flex: 1 }}>
-          <Text
-            numberOfLines={1}
-            style={{
-              paddingTop: Sizes.fixPadding - 7.0,
-              lineHeight: 21.0,
-              ...Fonts.blackColor18SemiBold,
-            }}
-          >
-            Audi A8 L
-          </Text>
-          <View style={{ flexDirection: isRtl ? "row-reverse" : "row" }}>
-            {showRating({ number: 5.0, starSize: 14.0 })}
+        {car ? (
+          <View style={{ flex: 1 }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                paddingTop: Sizes.fixPadding - 7.0,
+                lineHeight: 21.0,
+                ...Fonts.blackColor18SemiBold,
+              }}
+            >
+              {car.make} - {car.model}
+            </Text>
+            <View style={{ flexDirection: isRtl ? "row-reverse" : "row" }}>
+              <Text>Car Number: {car.car_number}</Text>
+            </View>
           </View>
-        </View>
+        ) : (
+          <Text>Loading...</Text>
+        )}
         <Text>
-          <Text style={{ ...Fonts.primaryColor16SemiBold }}>$220</Text>
-          <Text style={{ ...Fonts.blackColor16Medium }}>/{tr("day")}</Text>
+        <Text style={{ ...Fonts.primaryColor16SemiBold }}>
+          {car && car.prices && car.prices[0] && car.prices[0].price_after_discount}
+          <Text style={{ ...Fonts.blackColor16Medium }}> ₪/{tr("day")}</Text>
+        </Text> 
         </Text>
       </View>
     );
   }
-
+  
+  
   function carImage() {
     return (
       <View style={styles.carImageWrapStyle}>
-        <Image
-          source={require("../../assets/images/cars/car6.png")}
-          style={{ height: height / 4.0, width: "85%", alignSelf: "center" }}
-          resizeMode="contain"
-        />
+        {car && car.sub_images && car.sub_images.length > 0 && car.sub_images[0].photo_car_url ? (
+          <Image
+            source={{ uri: car.sub_images[0].photo_car_url }}
+            style={{ height: height / 4.0, width: "85%", alignSelf: "center" }}
+            resizeMode="contain"
+          />
+        ) : (
+          <Text>No Image Available</Text>
+        )}
       </View>
     );
   }
+  
 
   function header() {
     return (

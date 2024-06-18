@@ -4,6 +4,7 @@ import { Colors, Fonts, Sizes } from '../../constants/styles'
 import { Button } from '../../components/usableComponent/usableComponent'
 import { LanguageContext } from '../../languages'
 import { FontAwesome, Feather } from '@expo/vector-icons';
+import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,6 +18,9 @@ const SigninScreen = ({ navigation }) => {
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [splashLoading, setSplashLoading] = useState(false);
+    const { i18n, language } = useContext(LanguageContext);
+
+    const isRtl = (language == 'ar');
 
     const login = () => {
         setIsLoading(true);
@@ -37,19 +41,11 @@ const SigninScreen = ({ navigation }) => {
                 navigation.push('Splash')
             })
             .catch(e => {
-                console.log(`login error ${e}`);
+                setError(`invalid email or password `);
+                errorInfo();
                 setIsLoading(false);
             });
     };
-
-
-
-   
-
-    const { i18n, language } = useContext(LanguageContext);
-
-    const isRtl = (language == 'ar');
-
     function tr(key) {
         return i18n.t(`signinScreen.${key}`)
     }
@@ -74,7 +70,6 @@ const SigninScreen = ({ navigation }) => {
     }
 
     const [backClickCount, setBackClickCount] = useState(0);
-    const [phoneNumber, setPhoneNumber] = useState('');
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bodyBackColor }}>
@@ -105,27 +100,35 @@ const SigninScreen = ({ navigation }) => {
                 null
         )
     }
+   function errorInfo(){
+    <View style={{ alignItems: 'center', marginVertical: Sizes.fixPadding }}>
+    {error && (
+                Alert.alert('Error', error)
 
+    )}
+   
+</View>
+   }
     function dontAccountInfo() {
         return (
-            <Text style={{ textAlign: 'center', marginVertical: Sizes.fixPadding, marginHorizontal: Sizes.fixPadding * 2.0, }}>
+            <View style={{ alignItems: 'center', marginVertical: Sizes.fixPadding }}>
+               
                 <Text style={{ ...Fonts.grayColor14Medium }}>
-                    {tr('dontAccountInfo')} { }
+                    {tr('dontAccountInfo')}{' '}
+                    <Text onPress={() => navigation.push('Signup')} style={{ ...Fonts.primaryColor14Medium }}>
+                        {tr('signup')}
+                    </Text>
                 </Text>
-                <Text onPress={() => navigation.push('Signup')} style={{ ...Fonts.primaryColor14Medium }}>
-                    {tr('signup')}
-                </Text>
-            </Text>
-        )
+            </View>
+        );
     }
-
+    
     function signinButton() {
         return (
             <Button
                 btnText={tr('btnText')}
                 btnStyle={styles.signinButtonStyle}
                 onPress={login}
-                //onPress={() => navigation.push('Signup')}
 
             />
         )
@@ -134,20 +137,10 @@ const SigninScreen = ({ navigation }) => {
     function phoneNumberInfo() {
         return (
             <SafeAreaView style={styles.container}>
-            
-
-
-
                 <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={(text) => setEmail(text)}
                 />
                 <TextInput style={styles.input} placeholder="Password" value={password} secureTextEntry={true} onChangeText={(text) => setPassword(text)} 
                 />
-
-             
-
-
-
-
             </SafeAreaView>
         )
     }

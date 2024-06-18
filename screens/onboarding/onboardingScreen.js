@@ -20,20 +20,20 @@ const OnboardingScreen = ({ navigation }) => {
     const onboardingScreenList = [
         {
             id: '1',
-            onboardingImage: require('../../assets/images/onboarding/onboarding1.png'),
+            onboardingImage: require('../../assets/images/onboarding/onboarding3.jpeg'),
             onboardingTitle: tr('screen1Title'),
             onboardingDescription: 'Welcome to our car rental app in Palestine, offering a wide range of cars for daily use or special occasions.'
 
         },
         {
             id: '2',
-            onboardingImage: require('../../assets/images/onboarding/onboarding2.png'),
+            onboardingImage: require('../../assets/images/onboarding/onboarding2.jpeg'),
             onboardingTitle: tr('screen2Title'),
             onboardingDescription: 'Book your perfect car anytime, anywhere in Palestine with ease and enjoy 24/7 customer support. '
         },
         {
             id: '3',
-            onboardingImage: require('../../assets/images/onboarding/onboarding3.png'),
+            onboardingImage: require('../../assets/images/onboarding/onboarding1.jpeg'),
             onboardingTitle: tr('screen3Title'),
             onboardingDescription: 'Thank you for choosing us; experience a world of comfort and safety with our car rental app!'
         },
@@ -129,20 +129,21 @@ const OnboardingScreen = ({ navigation }) => {
         const renderItem = ({ item }) => {
             return (
                 <View style={{ flex: 1, width: width, height: '100%', overflow: 'hidden', }}>
-                    <View style={{ flex: 1, justifyContent: 'space-between', marginTop: Sizes.fixPadding * 5.0, alignItems: 'center' }}>
-                        <Image
-                            source={item.onboardingImage}
-                            style={{ width: width - 40.0, height: height / 3.0, resizeMode: 'contain' }}
-                        />
-                        <View style={{ marginHorizontal: Sizes.fixPadding * 2.0, }}>
-                            <Text style={{ textAlign: 'center', ...Fonts.blackColor20SemiBold }}>
-                                {item.onboardingTitle}
-                            </Text>
-                            <Text style={{ textAlign: 'center', ...Fonts.grayColor14Medium }}>
-                                {item.onboardingDescription}
-                            </Text>
-                        </View>
-                    </View>
+               <View style={{ flex: 1, justifyContent: 'space-between', marginTop: Sizes.fixPadding * 2.0, alignItems: 'center' }}>
+    <Image
+        source={item.onboardingImage}
+        style={{ width: width - 20.0, height: height / 2.0, resizeMode: 'contain' }}
+    />
+    <View style={{ marginHorizontal: Sizes.fixPadding * 1.0 ,marginBottom: Sizes.fixPadding * 2.0 }}>
+        <Text style={{ textAlign: 'center', ...Fonts.blackColor20SemiBold, fontSize: 24 }}>
+            {item.onboardingTitle}
+        </Text>
+        <Text style={{ textAlign: 'center', ...Fonts.grayColor14Medium, fontSize: 16 }}>
+            {item.onboardingDescription}
+        </Text>
+    </View>
+</View>
+
                 </View>
             )
         }
