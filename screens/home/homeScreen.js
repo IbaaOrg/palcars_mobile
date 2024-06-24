@@ -45,36 +45,45 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
     }, [category]);
 
     const fetchData = async (authToken) => {
+        const url = `https://zzz.center/public/api/cars?category=${category ? category : ""}`;
+        console.log('Fetching data from URL:', url);
         try {
-            const response = await axios.get(`https://zzz.center/public/api/cars?category=${category ? category : ""}`);
+            const response = await axios.get(url);
             const data = response.data.data;
-
+    
             const formattedData = data.map(car => ({
                 ...car,
                 imageUrl: car.sub_images.length > 0 ? car.sub_images[0].photo_car_url : 'default_image_url',
             }));
-
+    
             if (authToken) {
                 const cleanedAuthToken = authToken.replace(/^"(.*)"$/, '$1');
                 const favoritesResponse = await axios.get('https://zzz.center/public/api/favorites', {
                     headers: { Authorization: `Bearer ${cleanedAuthToken}` },
                 });
                 const favorites = favoritesResponse.data.data;
-
+    
                 const formattedWithFavorites = formattedData.map(car => ({
                     ...car,
                     inFavorite: favorites.some(fav => fav.car.id === car.id),
                     favoriteId: favorites.find(fav => fav.car.id === car.id)?.id || null,
                 }));
-
+    
                 setCars(formattedWithFavorites);
             } else {
                 setCars(formattedData);
             }
         } catch (error) {
-            console.error(error);
+            if (error.response && error.response.status === 404) {
+                console.error('Resource not found:', error.response.data);
+                setSnackBarMsg('Resource not found');
+                setShowSnackBar(true);
+            } else {
+                console.error('Error fetching data:', error);
+            }
         }
     };
+    
 
     const updateCars = async ({ id }) => {
         const updatedCars = cars.map((item) => {
@@ -93,25 +102,37 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
             let response;
 
             if (updatedCar.inFavorite) {
+                // Add to favorites
                 response = await axios.post('https://zzz.center/public/api/favorites', {
                     car_id: updatedCar.id,
                 }, {
                     headers: { Authorization: `Bearer ${cleanedAuthToken}` },
                 });
+
+                if (response.status === 200 || response.status === 201) {
+                    updatedCar.favoriteId = response.data.id; // Ensure the favorite ID is set correctly
+                    setCars(updatedCars);
+                    setShowSnackBar(true);
+                } else {
+                    throw new Error('Failed to add favorite');
+                }
             } else {
-                response = await axios.delete(`https://zzz.center/public/api/favorites/${updatedCar.favoriteId}`, {
+                // Remove from favorites
+                response = await axios.delete(`https://zzz.center/public/api/favorites/${id}`, {
                     headers: { Authorization: `Bearer ${cleanedAuthToken}` },
                 });
-            }
 
-            if (response.status === 200 || response.status === 204) {
-                setCars(updatedCars);
-                setShowSnackBar(true);
-            } else {
-                throw new Error('Failed to update favorite status');
+                if (response.status === 200 || response.status === 204) {
+                    updatedCar.favoriteId = null; // Reset the favorite ID
+                    setCars(updatedCars);
+                    setShowSnackBar(true);
+                } else {
+                    throw new Error('Failed to remove favorite');
+                }
             }
         } catch (error) {
-            console.error(error);
+            console.error(error.response.data.msg);
+            
             const revertedCars = cars.map((item) => {
                 if (item.id === id) {
                     return { ...item, inFavorite: !item.inFavorite };
@@ -119,7 +140,7 @@ const HomeScreen = ({ navigation, isRtl, i18n }) => {
                 return item;
             });
             setCars(revertedCars);
-            setSnackBarMsg(tr('updateFavFailed'));
+            setSnackBarMsg(tr('removeFromFav'));
             setShowSnackBar(true);
         }
     };

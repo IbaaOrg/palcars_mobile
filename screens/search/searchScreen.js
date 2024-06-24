@@ -184,17 +184,20 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
     }, [selectedCategory, selectedSeats,sortedCarData,search]);
     
     const togglePriceSortOrder = (index) => {
-        let sortedData = [...carData]; // Use carData instead of sortedCarData to reset sorting on each toggle
+        let sortedData = [...carData]; // Create a copy of carData
     
+        // Sort the data based on index
         if (index === 0) {
-            sortedData = sortCars('asc', sortedData); 
+            sortedData.sort((a, b) => parseFloat(a.prices[0].price_after_discount) - parseFloat(b.prices[0].price_after_discount));
         } else if (index === 1) {
-            sortedData = sortCars('desc', sortedData); 
+            sortedData.sort((a, b) => parseFloat(b.prices[0].price_after_discount) - parseFloat(a.prices[0].price_after_discount));
         }
     
-        setPriceSortOrder(index); 
-        setSortedCarData(sortedData); 
+        // Update state with the sorted data
+        setPriceSortOrder(index); // Update sort order state
+        setSortedCarData(sortedData); // Update sorted data state
     };
+    
     
     const sortCars = (order, data) => {
         // Sorting function based on price
@@ -210,10 +213,21 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
         });
     };
     useEffect(() => {
-        const filtered = carData.filter(car =>
+        let filtered = carData.filter(car =>
             car.make.toLowerCase().includes(search.toLowerCase())
         );
-        setSortedCarData(filtered);
+       // Apply sorting based on the current priceSortOrder
+    if (priceSortOrder === 0) {
+        carData.sort((a, b) => parseFloat(a.prices[0].price_after_discount) - parseFloat(b.prices[0].price_after_discount));
+     filtered=carData;
+    } else if (priceSortOrder === 1) {
+        carData.sort((a, b) => parseFloat(b.prices[0].price_after_discount) - parseFloat(a.prices[0].price_after_discount));
+        filtered=carData;
+
+    }
+
+    // Update state with filtered and sorted cars
+    setSortedCarData(filtered);
     }, [search, carData]);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bodyBackColor }}>

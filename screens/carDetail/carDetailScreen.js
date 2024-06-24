@@ -141,7 +141,7 @@ const CarDetailScreen = ({ navigation }) => {
         btnText={tr("btnText")}
         btnStyle={{ borderRadius: 0.5 }}
         onPress={() => {
-          navigation.push("PickupAndReturnDetail");
+          navigation.push("PickupAndReturnDetail", { item: itemId });
         }}
       />
     );

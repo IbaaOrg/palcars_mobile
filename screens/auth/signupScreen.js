@@ -33,7 +33,7 @@ const SignupScreen = ({ navigation }) => {
     const [userPhoto, setUserPhoto] = useState(null);
     const [hasValidDrivingLicense, setHasValidDrivingLicense] = useState(false);
     const [drivingLicensePhoto, setDrivingLicensePhoto] = useState(null);
-    const [profilePicUrl, setProfilePicUrl] = useState(require('../../assets/images/users/user1.png'));
+    const [profilePicUrl, setProfilePicUrl] = useState(require('../../assets/images/users/user1.jpg'));
     const [drivingPicUrl, setDrivingPicUrl] = useState(require('../../assets/images/users/user2.png'));
     const [showChangeProfilePicSheet, setShowChangeProfilePicSheet] = useState(false);
     const [showChangeDrivingPicSheet, setShowChangeDrivingPicSheet] = useState(false);
@@ -68,6 +68,11 @@ const SignupScreen = ({ navigation }) => {
     const handleConfirm = (selectedDate) => {
         if (selectedDate) {
             setBirthdate(selectedDate);
+        }
+        hideDatePicker();
+    };
+    const handleConfirm2 = (selectedDate) => {
+        if (selectedDate) {
             setDrivingLicenseExpiryDate(selectedDate); 
         }
         hideDatePicker();
@@ -134,8 +139,8 @@ const SignupScreen = ({ navigation }) => {
 
     function signupButton() {
         return (
-            <Button btnText={<Text>{tr('btnText')}</Text>} btnStyle={styles.signinButtonStyle} onPress={() => signupProcess()} />
-        );
+            <Button btnText={<Text>{tr('btnText')}</Text>} btnStyle={styles.signinButtonStyl } onPress={() => signupProcess()} />
+      );
     }
 
     function signupProcess() {
@@ -303,7 +308,7 @@ const SignupScreen = ({ navigation }) => {
                         display="default"
                         onChange={(event, selectedDate) => {
                             if (event.type === "set") {
-                                handleConfirm(selectedDate);
+                                handleConfirm2(selectedDate);
                             } else {
                                 hideDatePicker();
                             }
@@ -365,19 +370,19 @@ const SignupScreen = ({ navigation }) => {
             >
                 <View style={styles.bottomSheetWrapStyle}>
                     <Text style={{ textAlign: 'center', marginVertical: Sizes.fixPadding, ...Fonts.blackColor18Medium }}>
-                        {tr('changeProfilePic')}
+                        {tr('sheetTitle')}
                     </Text>
                     <TouchableOpacity
                         onPress={() => handleSelectImage(setProfilePicUrl)}
                         style={styles.bottomSheetOptionStyle}
                     >
-                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('selectFromGallery')}</Text>
+                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('gallery')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => handleCaptureImage(setProfilePicUrl)}
                         style={styles.bottomSheetOptionStyle}
                     >
-                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('captureWithCamera')}</Text>
+                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('camera')}</Text>
                     </TouchableOpacity>
                 </View>
             </BottomSheet>
@@ -393,19 +398,19 @@ const SignupScreen = ({ navigation }) => {
             >
                 <View style={styles.bottomSheetWrapStyle}>
                     <Text style={{ textAlign: 'center', marginVertical: Sizes.fixPadding, ...Fonts.blackColor18Medium }}>
-                        {tr('changeDrivingLicensePic')}
+                        {tr('sheetTitle')}
                     </Text>
                     <TouchableOpacity
                         onPress={() => handleSelectImage(setDrivingPicUrl)}
                         style={styles.bottomSheetOptionStyle}
                     >
-                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('selectFromGallery')}</Text>
+                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('gallery')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => handleCaptureImage(setDrivingPicUrl)}
                         style={styles.bottomSheetOptionStyle}
                     >
-                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('captureWithCamera')}</Text>
+                        <Text style={{ ...Fonts.blackColor16Medium }}>{tr('camera')}</Text>
                     </TouchableOpacity>
                 </View>
             </BottomSheet>
@@ -425,6 +430,11 @@ const styles = StyleSheet.create({
         borderBottomColor: Colors.lightGrayColor,
         borderBottomWidth: 1.0,
         marginHorizontal: Sizes.fixPadding * 2.0,
+    },
+    signinButtonStyl: {
+        marginHorizontal: Sizes.fixPadding * 3.0,
+        marginVertical: Sizes.fixPadding *2.0,
+    
     },
     alertSuccess: {
         backgroundColor: Colors.greenColor,

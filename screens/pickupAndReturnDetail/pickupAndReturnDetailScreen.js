@@ -4,7 +4,8 @@ import { Colors, Fonts, Sizes } from '../../constants/styles'
 import { MaterialIcons } from '@expo/vector-icons';
 import { LanguageContext } from '../../languages';
 import { Header, Button } from '../../components/usableComponent/usableComponent';
-
+import { useRoute } from '@react-navigation/native';
+import axios from 'axios';
 const { height, width } = Dimensions.get('window');
 
 const PickupAndReturnDetailScreen = ({ navigation, route }) => {
@@ -16,7 +17,21 @@ const PickupAndReturnDetailScreen = ({ navigation, route }) => {
     function tr(key) {
         return i18n.t(`pickupAndReturnDetailScreen.${key}`)
     }
-
+    const { item } = route.params;
+    const [car, setCar] = useState(null); // State for storing car data
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`https://zzz.center/public/api/cars/${item}`);
+         setCar(response.data.data)
+         console.log(response.data.data)
+         console.log(response.data.data.sub_images)
+        } catch (error) {
+          console.log(error.response.data);
+        }
+      };
+      fetchData();
+    }, [item]); 
     useEffect(() => {
         if (route.params?.address) {
             if (route.params.addressFor === 'pickup') {
@@ -190,11 +205,16 @@ const PickupAndReturnDetailScreen = ({ navigation, route }) => {
 
     function carImage() {
         return (
-            <Image
-                source={require('../../assets/images/cars/car6.png')}
+            <View>
+            {car && car.sub_images && car.sub_images.length > 0 && car.sub_images[0].photo_car_url ? (
+                <Image
+                  source={{ uri: car.sub_images[0].photo_car_url }}
                 style={{ height: height / 4.0, width: width - 40.0, alignSelf: 'center', }}
-                resizeMode="contain"
-            />
+            resizeMode="contain"
+                />
+              ) : (
+                <Text>No Image Available</Text>
+              )}</View>
         )
     }
 
