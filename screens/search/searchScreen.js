@@ -188,9 +188,9 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
     
         // Sort the data based on index
         if (index === 0) {
-            sortedData.sort((a, b) => parseFloat(a.prices[0].price_after_discount) - parseFloat(b.prices[0].price_after_discount));
+            sortedData.sort((a, b) => a.prices && a.prices[0] && parseFloat(a.prices[0].price_after_discount) -b.prices&&b.prices[0]&& parseFloat(b.prices&&b.prices[0].price_after_discount));
         } else if (index === 1) {
-            sortedData.sort((a, b) => parseFloat(b.prices[0].price_after_discount) - parseFloat(a.prices[0].price_after_discount));
+            sortedData.sort((a, b) =>b.prices&&b.prices[0]&& parseFloat(b.prices&&b.prices[0].price_after_discount) - a.prices && a.prices[0]&&parseFloat(a.prices&&a.prices[0].price_after_discount));
         }
     
         // Update state with the sorted data
@@ -202,10 +202,10 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
     const sortCars = (order, data) => {
         // Sorting function based on price
         return data.sort((a, b) => {
-            const priceA = parseFloat(a.prices[0].price_after_discount);
-            const priceB = parseFloat(b.prices[0].price_after_discount);
+            const priceA = a.prices && a.prices[0] ? parseFloat(a.prices[0].price_after_discount) : 0;
+            const priceB = b.prices && b.prices[0] ? parseFloat(b.prices[0].price_after_discount) : 0;
     
-            if (order === 'asc') {
+            if (order === 'asc') {2
                 return priceA - priceB;
             } else {
                 return priceB - priceA;
@@ -218,10 +218,10 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
         );
        // Apply sorting based on the current priceSortOrder
     if (priceSortOrder === 0) {
-        carData.sort((a, b) => parseFloat(a.prices[0].price_after_discount) - parseFloat(b.prices[0].price_after_discount));
+        carData.sort((a, b) => parseFloat(a.prices && a.prices[0].price_after_discount) - parseFloat(b.prices && b.prices[0].price_after_discount));
      filtered=carData;
     } else if (priceSortOrder === 1) {
-        carData.sort((a, b) => parseFloat(b.prices[0].price_after_discount) - parseFloat(a.prices[0].price_after_discount));
+        carData.sort((a, b) => parseFloat(b.prices && b.prices[0].price_after_discount) - parseFloat(a.prices && a.prices[0].price_after_discount));
         filtered=carData;
 
     }
@@ -410,12 +410,17 @@ const SearchScreen = ({ navigation, isRtl, i18n }) => {
     
     function displayFetchedCars() {
         return (
-            <View style={{ marginTop: Sizes.fixPadding * 2.0, marginHorizontal: Sizes.fixPadding * 2.0 ,}}>
-                {sortedCarData.map((car, index) => (
-                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',backgroundColor: Colors.whiteColor,borderCurve:2, marginBottom: Sizes.fixPadding + 5.0 }}>
-                        <Image source={{ uri: car.sub_images[0].photo_car_url }} style={{ width: 100.0, height: 50.0, resizeMode: 'stretch' }} />
+            <View style={{ marginTop: Sizes.fixPadding * 2.0, marginHorizontal: Sizes.fixPadding * 2.0, width: 380.0 }}>
+            {sortedCarData.map((car, index) => (
+                <View key={index} style={{ padding: Sizes.fixPadding, backgroundColor: Colors.whiteColor, borderRadius: 10, marginBottom: Sizes.fixPadding + 5.0 }}>
+                    <Image 
+                        source={{ uri: car.sub_images && car.sub_images.length > 0 && car.sub_images[0].photo_car_url ? car.sub_images[0].photo_car_url : 'default_image_url' }}
+                        style={{ width: '100%', height: 200.0, resizeMode: 'cover', borderRadius: 10 }} 
+                    />
                         <Text style={{ marginHorizontal: Sizes.fixPadding, ...Fonts.grayColor14Medium }}>{car.make} - {car.model}</Text>
-                        <Text style={{ marginHorizontal: Sizes.fixPadding, ...Fonts.primaryColor14Medium }}>{car.prices[0].price_after_discount}₪/day</Text>
+                        <Text style={{ ...Fonts.primaryColor14Medium, marginBottom: Sizes.fixPadding }}>
+                            {car.prices && car.prices[0] ? `${car.prices[0].price_after_discount}₪/day` : 'Price not available'}
+                        </Text>
                     </View>
                 ))}
             </View>
